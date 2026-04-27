@@ -1,2 +1,11 @@
-private/
-sistema_contable_ues_grup7/
+# Ignorar configuración personal de NetBeans
+nbproject/private/
+nbproject/genfiles.properties
+nbproject/project.state
+
+# Ignorar carpetas de compilación
+build/
+dist/
+
+# Ignorar archivos temporales
+*.log
