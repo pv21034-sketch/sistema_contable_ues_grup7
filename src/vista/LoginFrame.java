@@ -52,7 +52,7 @@ public class LoginFrame extends JFrame {
         try (Connection con = Conexion.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(
-                "SELECT id_empresa, nombre_comercial FROM empresa WHERE estado = 'ACTIVA'")) {
+                "SELECT id_empresa, nombre_comercial FROM empresa")) {
 
             List<String> nombres = new ArrayList<>();
             List<Integer> ids = new ArrayList<>();
