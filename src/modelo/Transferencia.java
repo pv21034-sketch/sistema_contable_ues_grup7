@@ -1,28 +1,46 @@
 package modelo;
 
 /**
- *
- * @author ing-jos-flores
+ * Modelo de Transferencia Bancaria
  */
 public class Transferencia {
 
     private int idEmpresa;
+
     private int idCuentaOrigen;
+
     private int idCuentaDestino;
+
     private double monto;
+
     private String fecha;
+
     private String concepto;
 
+    // Constructor vacío
     public Transferencia() {
-
     }
 
-    public Transferencia(int idEmpresa, int idCuentaOrigen, int idCuentaDestino, double monto, String fecha, String concepto) {
+    // Constructor completo
+    public Transferencia(
+            int idEmpresa,
+            int idCuentaOrigen,
+            int idCuentaDestino,
+            double monto,
+            String fecha,
+            String concepto
+    ) {
+
         this.idEmpresa = idEmpresa;
+
         this.idCuentaOrigen = idCuentaOrigen;
+
         this.idCuentaDestino = idCuentaDestino;
+
         this.monto = monto;
+
         this.fecha = fecha;
+
         this.concepto = concepto;
     }
 
@@ -74,4 +92,16 @@ public class Transferencia {
         this.concepto = concepto;
     }
 
+    @Override
+    public String toString() {
+
+        return "Transferencia{" +
+                "idEmpresa=" + idEmpresa +
+                ", idCuentaOrigen=" + idCuentaOrigen +
+                ", idCuentaDestino=" + idCuentaDestino +
+                ", monto=" + monto +
+                ", fecha='" + fecha + '\'' +
+                ", concepto='" + concepto + '\'' +
+                '}';
+    }
 }

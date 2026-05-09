@@ -1,16 +1,36 @@
 package modelo;
+
 import java.sql.Date;
 
 public class Cheque {
+
     private int idCheque;
     private int idCuenta;
+
     private String numeroCheque;
     private String beneficiario;
+
     private double monto;
+
     private Date fecha;
+
     private String concepto;
 
-    public Cheque(int idCheque, int idCuenta, String numeroCheque, String beneficiario, double monto, Date fecha, String concepto) {
+    // Constructor vacío
+    public Cheque() {
+    }
+
+    // Constructor completo
+    public Cheque(
+            int idCheque,
+            int idCuenta,
+            String numeroCheque,
+            String beneficiario,
+            double monto,
+            Date fecha,
+            String concepto
+    ) {
+
         this.idCheque = idCheque;
         this.idCuenta = idCuenta;
         this.numeroCheque = numeroCheque;
@@ -18,9 +38,6 @@ public class Cheque {
         this.monto = monto;
         this.fecha = fecha;
         this.concepto = concepto;
-    }
-
-    public Cheque() {
     }
 
     public int getIdCheque() {
@@ -79,5 +96,17 @@ public class Cheque {
         this.concepto = concepto;
     }
 
-    
+    @Override
+    public String toString() {
+
+        return "Cheque{" +
+                "idCheque=" + idCheque +
+                ", idCuenta=" + idCuenta +
+                ", numeroCheque='" + numeroCheque + '\'' +
+                ", beneficiario='" + beneficiario + '\'' +
+                ", monto=" + monto +
+                ", fecha=" + fecha +
+                ", concepto='" + concepto + '\'' +
+                '}';
+    }
 }
