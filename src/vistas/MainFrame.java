@@ -5,41 +5,68 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
 
+    private final int idEmpresa;
+    private final String nombreEmpresa;
+
     public MainFrame(int idEmpresa, String nombreEmpresa) {
 
-        setTitle("Módulo Bancos | Empresa: " + nombreEmpresa);
-        setSize(700, 450);
+        this.idEmpresa = idEmpresa;
+        this.nombreEmpresa = nombreEmpresa;
+
+        setTitle("Sistema Contable - Módulo Bancos");
+        setSize(800, 500);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
         setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 20, 20));
-        panel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
+        JPanel encabezado = new JPanel(new BorderLayout());
+        encabezado.setBackground(new Color(45, 45, 45));
+        encabezado.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        JButton btnCuentas = new JButton("Cuentas Bancarias");
-        JButton btnCheques = new JButton("Emisión de Cheques");
-        JButton btnTransferencias = new JButton("Transferencias");
-        JButton btnConciliacion = new JButton("Conciliación Bancaria");
-        JButton btnReporte = new JButton("Disponibilidad Diaria");
-        JButton btnSalir = new JButton("Cerrar Sesión");
+        JLabel titulo = new JLabel("Módulo de Bancos");
+        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        titulo.setForeground(Color.WHITE);
+
+        JLabel empresa = new JLabel("Empresa: " + nombreEmpresa);
+        empresa.setFont(new Font("Arial", Font.PLAIN, 14));
+        empresa.setForeground(new Color(210, 210, 210));
+
+        encabezado.add(titulo, BorderLayout.WEST);
+        encabezado.add(empresa, BorderLayout.SOUTH);
+
+        JPanel panelCentral = new JPanel(new GridLayout(3, 2, 20, 20));
+        panelCentral.setBackground(new Color(235, 235, 235));
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
+
+        JButton btnCuentas = crearBoton("Cuentas Bancarias");
+        JButton btnCheques = crearBoton("Emisión de Cheques");
+        JButton btnTransferencias = crearBoton("Transferencias");
+        JButton btnConciliacion = crearBoton("Conciliación Bancaria");
+        JButton btnReporte = crearBoton("Disponibilidad Diaria");
+        JButton btnSalir = crearBotonSalir("Cerrar Sesión");
 
         btnCuentas.addActionListener(e -> {
-            FormularioBancario ventana = new FormularioBancario();
+            FormularioBancario ventana = new FormularioBancario(idEmpresa);
             ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             ventana.setVisible(true);
         });
 
         btnCheques.addActionListener(e -> {
-            RegistroChequeFrame ventana = new RegistroChequeFrame();
-            ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            ventana.setVisible(true);
-        });
+    RegistroChequeFrame ventana = new RegistroChequeFrame(idEmpresa);
+    ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    ventana.setVisible(true);
+});
 
         btnTransferencias.addActionListener(e -> {
-            frmTrasferencias ventana = new frmTrasferencias();
-            ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            ventana.setVisible(true);
-        });
+
+    frmTrasferencias ventana =
+            new frmTrasferencias(idEmpresa);
+
+    ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+    ventana.setVisible(true);
+});
 
         btnConciliacion.addActionListener(e -> {
             ConciliacionFrame ventana = new ConciliacionFrame(idEmpresa);
@@ -48,7 +75,8 @@ public class MainFrame extends JFrame {
         });
 
         btnReporte.addActionListener(e -> {
-            ReporteDisponibilidadFrame ventana = new ReporteDisponibilidadFrame();
+            ReporteDisponibilidadFrame ventana =
+        new ReporteDisponibilidadFrame(idEmpresa);
             ventana.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             ventana.setVisible(true);
         });
@@ -58,27 +86,48 @@ public class MainFrame extends JFrame {
             new LoginFrame().setVisible(true);
         });
 
-        panel.add(btnCuentas);
-        panel.add(btnCheques);
-        panel.add(btnTransferencias);
-        panel.add(btnConciliacion);
-        panel.add(btnReporte);
-        panel.add(btnSalir);
+        panelCentral.add(btnCuentas);
+        panelCentral.add(btnCheques);
+        panelCentral.add(btnTransferencias);
+        panelCentral.add(btnConciliacion);
+        panelCentral.add(btnReporte);
+        panelCentral.add(btnSalir);
 
-        JLabel titulo = new JLabel(
-                "  Módulo: Bancos  |  Empresa: " + nombreEmpresa,
-                SwingConstants.LEFT
-        );
-
-        titulo.setFont(new Font("Arial", Font.BOLD, 18));
-
-        add(titulo, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
+        add(encabezado, BorderLayout.NORTH);
+        add(panelCentral, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
+    private JButton crearBoton(String texto) {
+
+        JButton boton = new JButton(texto);
+
+        boton.setFont(new Font("Arial", Font.BOLD, 15));
+        boton.setForeground(new Color(45, 45, 45));
+        boton.setBackground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        boton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(190, 190, 190)),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+
+        return boton;
+    }
+
+    private JButton crearBotonSalir(String texto) {
+
+        JButton boton = crearBoton(texto);
+
+        boton.setForeground(Color.WHITE);
+        boton.setBackground(new Color(90, 90, 90));
+
+        return boton;
+    }
+
     public static void main(String[] args) {
+
         java.awt.EventQueue.invokeLater(() -> {
             new MainFrame(1, "EMPRESA DEMO").setVisible(true);
         });

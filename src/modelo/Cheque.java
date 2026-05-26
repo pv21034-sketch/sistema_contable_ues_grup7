@@ -5,9 +5,13 @@ import java.sql.Date;
 public class Cheque {
 
     private int idCheque;
+
+    private int idEmpresa;
+
     private int idCuenta;
 
     private String numeroCheque;
+
     private String beneficiario;
 
     private double monto;
@@ -23,6 +27,7 @@ public class Cheque {
     // Constructor completo
     public Cheque(
             int idCheque,
+            int idEmpresa,
             int idCuenta,
             String numeroCheque,
             String beneficiario,
@@ -32,11 +37,19 @@ public class Cheque {
     ) {
 
         this.idCheque = idCheque;
+
+        this.idEmpresa = idEmpresa;
+
         this.idCuenta = idCuenta;
+
         this.numeroCheque = numeroCheque;
+
         this.beneficiario = beneficiario;
+
         this.monto = monto;
+
         this.fecha = fecha;
+
         this.concepto = concepto;
     }
 
@@ -46,6 +59,14 @@ public class Cheque {
 
     public void setIdCheque(int idCheque) {
         this.idCheque = idCheque;
+    }
+
+    public int getIdEmpresa() {
+        return idEmpresa;
+    }
+
+    public void setIdEmpresa(int idEmpresa) {
+        this.idEmpresa = idEmpresa;
     }
 
     public int getIdCuenta() {
@@ -101,6 +122,7 @@ public class Cheque {
 
         return "Cheque{" +
                 "idCheque=" + idCheque +
+                ", idEmpresa=" + idEmpresa +
                 ", idCuenta=" + idCuenta +
                 ", numeroCheque='" + numeroCheque + '\'' +
                 ", beneficiario='" + beneficiario + '\'' +

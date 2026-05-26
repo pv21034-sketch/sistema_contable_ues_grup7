@@ -9,10 +9,15 @@ import java.sql.*;
 
 public class ReporteDisponibilidadFrame extends JFrame {
 
+    private int idEmpresa;
+
     private JTable tablaReporte;
+
     private DefaultTableModel modelo;
 
-    public ReporteDisponibilidadFrame() {
+    public ReporteDisponibilidadFrame(int idEmpresa) {
+
+        this.idEmpresa = idEmpresa;
 
         setTitle("Reporte de Disponibilidad Diaria");
         setSize(950, 500);
@@ -35,9 +40,12 @@ public class ReporteDisponibilidadFrame extends JFrame {
 
         add(new JScrollPane(tablaReporte), BorderLayout.CENTER);
 
-        JButton btnActualizar = new JButton("Actualizar Reporte");
+        JButton btnActualizar =
+                new JButton("Actualizar Reporte");
 
-        btnActualizar.addActionListener(e -> cargarReporte());
+        btnActualizar.addActionListener(
+                e -> cargarReporte()
+        );
 
         add(btnActualizar, BorderLayout.SOUTH);
 
@@ -48,33 +56,51 @@ public class ReporteDisponibilidadFrame extends JFrame {
 
         modelo.setRowCount(0);
 
-        String sql = "SELECT * FROM vista_disponibilidad_diaria ORDER BY fecha DESC";
+        String sql =
+                "SELECT * " +
+                "FROM vista_disponibilidad_diaria " +
+                "WHERE id_empresa = ? " +
+                "ORDER BY fecha DESC";
 
         try (
                 Connection con = Conexion.getConexion();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
+                PreparedStatement ps =
+                        con.prepareStatement(sql)
         ) {
 
-            while (rs.next()) {
+            ps.setInt(1, idEmpresa);
 
-                modelo.addRow(new Object[]{
-                    rs.getInt("id_cuenta"),
-                    rs.getString("banco"),
-                    rs.getString("numero_cuenta"),
-                    rs.getDate("fecha"),
-                    rs.getDouble("saldo_inicial"),
-                    rs.getDouble("ingresos"),
-                    rs.getDouble("egresos"),
-                    rs.getDouble("saldo_disponible")
-                });
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+
+                    modelo.addRow(new Object[]{
+
+                        rs.getInt("id_cuenta"),
+
+                        rs.getString("banco"),
+
+                        rs.getString("numero_cuenta"),
+
+                        rs.getDate("fecha"),
+
+                        rs.getDouble("saldo_inicial"),
+
+                        rs.getDouble("ingresos"),
+
+                        rs.getDouble("egresos"),
+
+                        rs.getDouble("saldo_disponible")
+                    });
+                }
             }
 
         } catch (SQLException e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Error al cargar reporte: " + e.getMessage()
+                    "Error al cargar reporte: "
+                    + e.getMessage()
             );
         }
     }
@@ -83,7 +109,8 @@ public class ReporteDisponibilidadFrame extends JFrame {
 
         java.awt.EventQueue.invokeLater(() -> {
 
-            new ReporteDisponibilidadFrame().setVisible(true);
+            new ReporteDisponibilidadFrame(1)
+                    .setVisible(true);
         });
     }
 }
