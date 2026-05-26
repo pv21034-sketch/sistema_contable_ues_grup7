@@ -10,17 +10,21 @@ import javax.swing.table.DefaultTableModel;
 
 public class RegistroChequeFrame extends javax.swing.JFrame {
 
+    private int idEmpresa;
+
     int idSeleccionado = 0;
 
     DefaultTableModel modelo;
 
-    public RegistroChequeFrame() {
+    public RegistroChequeFrame(int idEmpresa) {
+
+        this.idEmpresa = idEmpresa;
 
         initComponents();
 
         ChequeDAO dao = new ChequeDAO();
 
-        dao.listarCuentas(cmbCuentaBancaria);
+        dao.listarCuentas(cmbCuentaBancaria, idEmpresa);
 
         this.setLocationRelativeTo(null);
 
@@ -41,15 +45,10 @@ public class RegistroChequeFrame extends javax.swing.JFrame {
     private void limpiarCampos() {
 
         txtNumeroCheque.setText("");
-
         txtBeneficiario.setText("");
-
         txtMonto.setText("");
-
         ftxtFecha.setText("");
-
         txtConcepto.setText("");
-
         cmbCuentaBancaria.setSelectedIndex(0);
     }
 
@@ -63,22 +62,17 @@ public class RegistroChequeFrame extends javax.swing.JFrame {
         ChequeDAO dao = new ChequeDAO();
 
         List<Cheque> lista =
-                dao.buscarCheques(texto);
+                dao.buscarCheques(texto, idEmpresa);
 
         Object[] fila = new Object[6];
 
         for (int i = 0; i < lista.size(); i++) {
 
             fila[0] = lista.get(i).getIdCheque();
-
             fila[1] = lista.get(i).getNumeroCheque();
-
             fila[2] = lista.get(i).getBeneficiario();
-
             fila[3] = lista.get(i).getMonto();
-
             fila[4] = lista.get(i).getFecha();
-
             fila[5] = lista.get(i).getConcepto();
 
             modeloTab.addRow(fila);
@@ -95,22 +89,17 @@ public class RegistroChequeFrame extends javax.swing.JFrame {
         ChequeDAO dao = new ChequeDAO();
 
         List<Cheque> lista =
-                dao.listarCheques();
+                dao.listarCheques(idEmpresa);
 
         Object[] objeto = new Object[6];
 
         for (int i = 0; i < lista.size(); i++) {
 
             objeto[0] = lista.get(i).getIdCheque();
-
             objeto[1] = lista.get(i).getNumeroCheque();
-
             objeto[2] = lista.get(i).getBeneficiario();
-
             objeto[3] = lista.get(i).getMonto();
-
             objeto[4] = lista.get(i).getFecha();
-
             objeto[5] = lista.get(i).getConcepto();
 
             modeloTab.addRow(objeto);
@@ -316,86 +305,87 @@ public class RegistroChequeFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCuentaBancariaActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-           if (cmbCuentaBancaria.getSelectedIndex() <= 0) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Seleccione una cuenta bancaria.",
-                "Validación",
-                JOptionPane.WARNING_MESSAGE
-        );
-        return;
-    }
+          if (cmbCuentaBancaria.getSelectedIndex() <= 0) {
+    JOptionPane.showMessageDialog(
+            this,
+            "Seleccione una cuenta bancaria.",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE
+    );
+    return;
+}
+
+try {
+    Cheque cheque = new Cheque();
+
+    String itemSeleccionado = cmbCuentaBancaria
+            .getSelectedItem()
+            .toString();
+
+    int idCuenta = Integer.parseInt(
+            itemSeleccionado.split("-")[0].trim()
+    );
+
+    cheque.setIdEmpresa(idEmpresa);
+    cheque.setIdCuenta(idCuenta);
+    cheque.setNumeroCheque(txtNumeroCheque.getText().trim());
+    cheque.setBeneficiario(txtBeneficiario.getText().trim().toUpperCase());
+    cheque.setMonto(Double.parseDouble(txtMonto.getText().trim()));
+    cheque.setConcepto(txtConcepto.getText().trim());
 
     try {
-        Cheque cheque = new Cheque();
+        java.text.SimpleDateFormat sdf =
+                new java.text.SimpleDateFormat("dd/MM/yyyy");
 
-        String itemSeleccionado = cmbCuentaBancaria
-                .getSelectedItem()
-                .toString();
+        java.util.Date fechaUtil =
+                sdf.parse(ftxtFecha.getText().trim());
 
-        int idCuenta = Integer.parseInt(
-                itemSeleccionado.split("-")[0].trim()
-        );
-
-        cheque.setIdCuenta(idCuenta);
-        cheque.setNumeroCheque(txtNumeroCheque.getText().trim());
-        cheque.setBeneficiario(txtBeneficiario.getText().trim().toUpperCase());
-        cheque.setMonto(Double.parseDouble(txtMonto.getText().trim()));
-        cheque.setConcepto(txtConcepto.getText().trim());
-
-        try {
-            java.text.SimpleDateFormat sdf =
-                    new java.text.SimpleDateFormat("dd/MM/yyyy");
-
-            java.util.Date fechaUtil =
-                    sdf.parse(ftxtFecha.getText().trim());
-
-            cheque.setFecha(
-                    new java.sql.Date(fechaUtil.getTime())
-            );
-
-        } catch (Exception e) {
-            cheque.setFecha(
-                    new java.sql.Date(System.currentTimeMillis())
-            );
-        }
-
-        ChequeDAO dao = new ChequeDAO();
-
-        if (dao.registrarCheque(cheque)) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Cheque registrado y movimiento de salida generado."
-            );
-
-            limpiarCampos();
-            listar();
-
-        } else {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Error al guardar en la base de datos.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(
-                this,
-                "El monto debe ser un número válido.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
+        cheque.setFecha(
+                new java.sql.Date(fechaUtil.getTime())
         );
 
     } catch (Exception e) {
+        cheque.setFecha(
+                new java.sql.Date(System.currentTimeMillis())
+        );
+    }
+
+    ChequeDAO dao = new ChequeDAO();
+
+    if (dao.registrarCheque(cheque, idEmpresa)) {
         JOptionPane.showMessageDialog(
                 this,
-                "Error crítico: " + e.getMessage(),
+                "Cheque registrado y movimiento de salida generado."
+        );
+
+        limpiarCampos();
+        listar();
+
+    } else {
+        JOptionPane.showMessageDialog(
+                this,
+                "Error al guardar en la base de datos.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE
         );
     }
+
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(
+            this,
+            "El monto debe ser un número válido.",
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+    );
+
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(
+            this,
+            "Error crítico: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+    );
+}
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void tblMostrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMostrarMouseClicked
@@ -470,7 +460,7 @@ if (confirmacion == JOptionPane.YES_OPTION) {
 
     ChequeDAO dao = new ChequeDAO();
 
-    if (dao.eliminar(idSeleccionado)) {
+    if (dao.eliminar(idSeleccionado, idEmpresa)) {
 
         JOptionPane.showMessageDialog(
                 this,
@@ -513,6 +503,8 @@ try {
     Cheque cheque = new Cheque();
 
     cheque.setIdCheque(idSeleccionado);
+
+    cheque.setIdEmpresa(idEmpresa);
 
     cheque.setNumeroCheque(
             txtNumeroCheque.getText().trim()
@@ -560,7 +552,7 @@ try {
 
     ChequeDAO dao = new ChequeDAO();
 
-    if (dao.actualizar(cheque)) {
+    if (dao.actualizar(cheque, idEmpresa)) {
 
         JOptionPane.showMessageDialog(
                 this,
@@ -629,7 +621,7 @@ try {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegistroChequeFrame().setVisible(true);
+                new RegistroChequeFrame(1).setVisible(true);
             }
         });
     }

@@ -27,7 +27,6 @@ public class ConciliacionFrame extends JFrame {
         setLayout(new BorderLayout(15, 15));
 
         iniciarComponentes();
-
         cargarDatos();
     }
 
@@ -61,7 +60,6 @@ public class ConciliacionFrame extends JFrame {
         };
 
         tablaMovimientos = new JTable(modelo);
-
         tablaMovimientos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         add(new JScrollPane(tablaMovimientos), BorderLayout.CENTER);
@@ -75,7 +73,6 @@ public class ConciliacionFrame extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
 
         btnRefrescar.addActionListener(e -> cargarDatos());
-
         btnConciliar.addActionListener(e -> cambiarEstado("CONCILIADO"));
     }
 
@@ -92,14 +89,12 @@ public class ConciliacionFrame extends JFrame {
         try (Connection con = Conexion.getConexion()) {
 
             if (con == null) {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "Error de conexión con la base de datos.",
                         "Conexión",
                         JOptionPane.ERROR_MESSAGE
                 );
-
                 return;
             }
 
@@ -140,14 +135,12 @@ public class ConciliacionFrame extends JFrame {
         int fila = tablaMovimientos.getSelectedRow();
 
         if (fila == -1) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Seleccione un movimiento de la tabla.",
                     "Validación",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
@@ -162,15 +155,15 @@ public class ConciliacionFrame extends JFrame {
             return;
         }
 
-        int idMovimiento =
-                Integer.parseInt(
-                        modelo.getValueAt(fila, 0).toString()
-                );
+        int idMovimiento = Integer.parseInt(
+                modelo.getValueAt(fila, 0).toString()
+        );
 
         String sql =
                 "UPDATE movimientos_bancarios " +
                 "SET estado_conciliacion = ? " +
-                "WHERE id_movimiento = ?";
+                "WHERE id_movimiento = ? " +
+                "AND id_empresa = ?";
 
         try (
                 Connection con = Conexion.getConexion();
@@ -178,24 +171,22 @@ public class ConciliacionFrame extends JFrame {
         ) {
 
             if (con == null) {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "Error de conexión con la base de datos.",
                         "Conexión",
                         JOptionPane.ERROR_MESSAGE
                 );
-
                 return;
             }
 
             ps.setString(1, nuevoEstado);
             ps.setInt(2, idMovimiento);
+            ps.setInt(3, idEmpresa);
 
             int filas = ps.executeUpdate();
 
             if (filas > 0) {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "Movimiento actualizado correctamente."
@@ -204,7 +195,6 @@ public class ConciliacionFrame extends JFrame {
                 cargarDatos();
 
             } else {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "No se pudo actualizar el movimiento.",
@@ -223,12 +213,11 @@ public class ConciliacionFrame extends JFrame {
             );
         }
     }
-        public static void main(String[] args) {
+
+    public static void main(String[] args) {
 
         java.awt.EventQueue.invokeLater(() -> {
-
-            new ConciliacionFrame(1)
-                    .setVisible(true);
+            new ConciliacionFrame(1).setVisible(true);
         });
     }
 }

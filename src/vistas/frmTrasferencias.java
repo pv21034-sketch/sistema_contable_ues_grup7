@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package vistas;
 
 import conexion.Conexion;
@@ -19,26 +15,21 @@ import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ing-jos-flores
- */
 public class frmTrasferencias extends javax.swing.JFrame {
 
     private TransferenciaDAO transferenciaDAO =
             new TransferenciaDAO();
 
-    private int idEmpresaActual = 1;
+    private int idEmpresaActual;
 
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(
                     frmTrasferencias.class.getName()
             );
 
-    /**
-     * Creates new form frmTrasferencias
-     */
-    public frmTrasferencias() {
+    public frmTrasferencias(int idEmpresa) {
+
+        this.idEmpresaActual = idEmpresa;
 
         initComponents();
 
@@ -46,19 +37,16 @@ public class frmTrasferencias extends javax.swing.JFrame {
 
         mostrarSaldos();
 
-        // Bloqueando campos del Emisor
         txtNuCuentaEmisor.setEditable(false);
         txtNombresEmisor.setEditable(false);
         txtApellidosEmisor.setEditable(false);
         txtSaldoEmisor.setEditable(false);
 
-        // Fecha automática
         ftxtFechaEnviar.setEditable(false);
         ftxtFechaEnviar.setEnabled(false);
 
         establecerFechaActual();
 
-        // Bloqueando campos del Receptor
         txtIdRecibe.setEditable(false);
         txtNombresReceptor.setEditable(false);
         txtApellidosReceptor.setEditable(false);
@@ -67,32 +55,25 @@ public class frmTrasferencias extends javax.swing.JFrame {
 
     public void limpiarFormulario() {
 
-        // Campos del Emisor
-        txtIdEnviar.setText("");
-        txtNuCuentaEmisor.setText("");
-        txtNombresEmisor.setText("");
-        txtApellidosEmisor.setText("");
-        txtSaldoEmisor.setText("");
+    txtIdEnviar.setText("");
+    txtNuCuentaEmisor.setText("");
+    txtNombresEmisor.setText("");
+    txtApellidosEmisor.setText("");
+    txtSaldoEmisor.setText("");
 
-        // Campos del Receptor
-        txtIdRecibe.setText("");
-        txtNuCuentaReceptor.setText("");
-        txtNombresReceptor.setText("");
-        txtApellidosReceptor.setText("");
-        txtSaldoReceptor.setText("");
+    txtIdRecibe.setText("");
+    txtNuCuentaReceptor.setText("");
+    txtNombresReceptor.setText("");
+    txtApellidosReceptor.setText("");
+    txtSaldoReceptor.setText("");
 
-        // Campos de transferencia
-        txtMontoEnviar.setText("");
-        txtConceptoEnviar.setText("");
+    txtMontoEnviar.setText("");
+    txtConceptoEnviar.setText("");
 
-        // Fecha actual nuevamente
-        establecerFechaActual();
+    establecerFechaActual();
 
-        // Cursor al inicio
-        txtIdEnviar.requestFocus();
-    }
-
-    @SuppressWarnings("unchecked")
+    txtIdEnviar.requestFocus();
+}
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -389,7 +370,7 @@ public void actualizarTabla() {
 }
     private void btnTransferirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTransferirActionPerformed
     // Validar campos vacíos
-    if (txtIdEnviar.getText().trim().isEmpty()
+     if (txtIdEnviar.getText().trim().isEmpty()
             || txtIdRecibe.getText().trim().isEmpty()
             || txtMontoEnviar.getText().trim().isEmpty()) {
 
@@ -405,89 +386,58 @@ public void actualizarTabla() {
 
     try {
 
-        int idOrigen =
-                Integer.parseInt(
-                        txtIdEnviar.getText().trim()
-                );
+        int idOrigen = Integer.parseInt(txtIdEnviar.getText().trim());
+        int idDestino = Integer.parseInt(txtIdRecibe.getText().trim());
+        double montoATransferir = Double.parseDouble(txtMontoEnviar.getText().trim());
 
-        int idDestino =
-                Integer.parseInt(
-                        txtIdRecibe.getText().trim()
-                );
-
-        double montoATransferir =
-                Double.parseDouble(
-                        txtMontoEnviar.getText().trim()
-                );
-
-        // Validar transferencia a la misma cuenta
         if (idOrigen == idDestino) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "No puede transferirse a la misma cuenta.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
-
             return;
         }
 
-        // Validar monto positivo
         if (montoATransferir <= 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "El monto debe ser mayor a cero.",
                     "Validación",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        // Obtener saldo disponible
-        double saldoDisponible =
-                Double.parseDouble(
-                        txtSaldoEmisor.getText().trim()
-                );
+        double saldoDisponible = Double.parseDouble(txtSaldoEmisor.getText().trim());
 
-        // Validar fondos
         if (montoATransferir > saldoDisponible) {
-
             JOptionPane.showMessageDialog(
                     this,
-                    "Fondos insuficientes.\n\n" +
-                    "Saldo disponible: $" + saldoDisponible +
-                    "\nMonto solicitado: $" + montoATransferir,
+                    "Fondos insuficientes.\n\n"
+                    + "Saldo disponible: $" + saldoDisponible
+                    + "\nMonto solicitado: $" + montoATransferir,
                     "Fondos insuficientes",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        // Confirmación
-        int respuesta =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "¿Confirmar transferencia de $" +
-                        montoATransferir + "?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION
-                );
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Confirmar transferencia de $" + montoATransferir + "?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION
+        );
 
         if (respuesta == JOptionPane.YES_OPTION) {
 
-            Transferencia t =
-                    new Transferencia();
+            Transferencia t = new Transferencia();
 
-            t.setIdEmpresa(1);
-
+            t.setIdEmpresa(idEmpresaActual);
             t.setIdCuentaOrigen(idOrigen);
-
             t.setIdCuentaDestino(idDestino);
-
             t.setMonto(montoATransferir);
 
             t.setConcepto(
@@ -497,16 +447,12 @@ public void actualizarTabla() {
             );
 
             t.setFecha(
-                    new java.text.SimpleDateFormat(
-                            "yyyy-MM-dd"
-                    ).format(
-                            new java.util.Date()
-                    )
+                    new java.text.SimpleDateFormat("yyyy-MM-dd")
+                            .format(new java.util.Date())
             );
 
             boolean exito =
-                    transferenciaDAO
-                            .ejecutarTransferencia(t);
+                    transferenciaDAO.ejecutarTransferencia(t);
 
             if (exito) {
 
@@ -516,7 +462,6 @@ public void actualizarTabla() {
                 );
 
                 limpiarFormulario();
-
                 actualizarTabla();
 
             } else {
@@ -571,23 +516,23 @@ try {
             );
 
     String[] datos =
-            transferenciaDAO.buscarPorId(id);
+            transferenciaDAO.buscarPorId(
+                    id,
+                    idEmpresaActual
+            );
 
     if (datos != null) {
 
         txtNuCuentaEmisor.setText(datos[0]);
-
         txtNombresEmisor.setText(datos[1]);
-
         txtApellidosEmisor.setText(datos[2]);
-
         txtSaldoEmisor.setText(datos[3]);
 
     } else {
 
         JOptionPane.showMessageDialog(
                 this,
-                "ID de emisor no encontrado.",
+                "ID de emisor no encontrado para esta empresa.",
                 "Búsqueda",
                 JOptionPane.WARNING_MESSAGE
         );
@@ -628,7 +573,10 @@ if (cuenta.isEmpty()) {
 
 String[] datos =
         transferenciaDAO
-                .buscarPorNumeroCuenta(cuenta);
+                .buscarPorNumeroCuenta(
+                        cuenta,
+                        idEmpresaActual
+                );
 
 if (datos != null) {
 
@@ -644,7 +592,7 @@ if (datos != null) {
 
     JOptionPane.showMessageDialog(
             this,
-            "El número de cuenta no existe.",
+            "El número de cuenta no existe para esta empresa.",
             "Búsqueda",
             JOptionPane.WARNING_MESSAGE
     );
@@ -726,7 +674,9 @@ public void establecerFechaActual() {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new frmTrasferencias().setVisible(true));
+        java.awt.EventQueue.invokeLater(() ->
+        new frmTrasferencias(1).setVisible(true)
+);
 
     }
 

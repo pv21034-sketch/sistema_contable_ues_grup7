@@ -7,12 +7,15 @@ import javax.swing.UIManager;
 
 public class GestionBancaria {
 
-    public static void abrirFormularioBancario() {
+    public static void abrirFormularioBancario(int idEmpresa) {
 
         aplicarEstiloVisual();
 
         java.awt.EventQueue.invokeLater(() -> {
-            FormularioBancario formulario = new FormularioBancario();
+
+            FormularioBancario formulario =
+                    new FormularioBancario(idEmpresa);
+
             formulario.setVisible(true);
         });
     }
@@ -21,11 +24,14 @@ public class GestionBancaria {
 
         try {
 
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            for (UIManager.LookAndFeelInfo info :
+                    UIManager.getInstalledLookAndFeels()) {
 
                 if ("Nimbus".equals(info.getName())) {
 
-                    UIManager.setLookAndFeel(info.getClassName());
+                    UIManager.setLookAndFeel(
+                            info.getClassName()
+                    );
 
                     break;
                 }
@@ -35,7 +41,8 @@ public class GestionBancaria {
 
             JOptionPane.showMessageDialog(
                     null,
-                    "No se pudo aplicar el estilo visual: " + e.getMessage(),
+                    "No se pudo aplicar el estilo visual: "
+                    + e.getMessage(),
                     "Advertencia",
                     JOptionPane.WARNING_MESSAGE
             );
