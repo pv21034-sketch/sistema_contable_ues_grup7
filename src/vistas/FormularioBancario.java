@@ -10,8 +10,8 @@ public class FormularioBancario extends javax.swing.JFrame {
     private int idEmpresa;
 
     // Base de datos temporal
-    public static ArrayList<CuentaBancaria> listaCuentas =
-            new ArrayList<>();
+    public static ArrayList<CuentaBancaria> listaCuentas
+            = new ArrayList<>();
 
     public FormularioBancario(int idEmpresa) {
 
@@ -22,6 +22,8 @@ public class FormularioBancario extends javax.swing.JFrame {
         txtIdEmpresa.setText(String.valueOf(idEmpresa));
 
         txtIdEmpresa.setEditable(false);
+        
+        this.setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -195,45 +197,143 @@ public class FormularioBancario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIdEmpresaActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-          try {
+        try {
 
-        String ban =
-                txtBanco.getText()
-                        .trim()
-                        .toUpperCase();
+            String ban
+                    = txtBanco.getText()
+                            .trim()
+                            .toUpperCase();
 
-        String num =
-                txtNumeroCuenta.getText()
-                        .trim();
+            String num
+                    = txtNumeroCuenta.getText()
+                            .trim();
 
-        String tipo =
-                cbTipoCuenta
-                        .getSelectedItem()
-                        .toString();
+            String tipo
+                    = cbTipoCuenta
+                            .getSelectedItem()
+                            .toString();
 
-        double saldo =
-                Double.parseDouble(
-                        txtSaldoInicial
-                                .getText()
-                                .trim()
+            double saldo
+                    = Double.parseDouble(
+                            txtSaldoInicial
+                                    .getText()
+                                    .trim()
+                    );
+
+            String est
+                    = cbEstado
+                            .getSelectedItem()
+                            .toString();
+
+            if (ban.isEmpty() || num.isEmpty()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Complete todos los campos.",
+                        "Validación",
+                        JOptionPane.WARNING_MESSAGE
                 );
 
-        String est =
-                cbEstado
-                        .getSelectedItem()
-                        .toString();
+                return;
+            }
 
-        if (ban.isEmpty() || num.isEmpty()) {
+            for (CuentaBancaria c : listaCuentas) {
+
+                if (c.getIdEmpresa() != idEmpresa) {
+                    continue;
+                }
+
+                if (c.getNumeroCuenta()
+                        .equalsIgnoreCase(num)) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "La cuenta ya existe.",
+                            "Duplicado",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    return;
+                }
+            }
+
+            CuentaBancaria nueva
+                    = new CuentaBancaria(
+                            idEmpresa,
+                            ban,
+                            num,
+                            tipo,
+                            saldo,
+                            est
+                    );
+
+            listaCuentas.add(nueva);
+
+            CuentaBancariaDAO dao
+                    = new CuentaBancariaDAO();
+
+            boolean guardado
+                    = dao.guardar(nueva);
+
+            if (guardado) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Cuenta guardada en MySQL."
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Error guardando en MySQL.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+            limpiarCampos();
+
+        } catch (NumberFormatException e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Complete todos los campos.",
-                    "Validación",
-                    JOptionPane.WARNING_MESSAGE
+                    "El saldo debe ser numérico.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
             );
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error inesperado: "
+                    + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+
+        DialogBuscar buscador
+                = new DialogBuscar(this, true);
+
+        buscador.setLocationRelativeTo(this);
+
+        buscador.setVisible(true);
+
+        String numeroABuscar
+                = buscador.getNumeroEncontrado().trim();
+
+        if (numeroABuscar.isEmpty()) {
 
             return;
         }
+
+        boolean encontrado = false;
 
         for (CuentaBancaria c : listaCuentas) {
 
@@ -242,210 +342,112 @@ public class FormularioBancario extends javax.swing.JFrame {
             }
 
             if (c.getNumeroCuenta()
-                    .equalsIgnoreCase(num)) {
+                    .equalsIgnoreCase(numeroABuscar)) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "La cuenta ya existe.",
-                        "Duplicado",
-                        JOptionPane.WARNING_MESSAGE
+                txtIdEmpresa.setText(
+                        String.valueOf(c.getIdEmpresa())
                 );
 
-                return;
+                txtBanco.setText(
+                        c.getBanco()
+                );
+
+                txtNumeroCuenta.setText(
+                        c.getNumeroCuenta()
+                );
+
+                cbTipoCuenta.setSelectedItem(
+                        c.getTipoCuenta()
+                );
+
+                txtSaldoInicial.setText(
+                        String.valueOf(c.getSaldoInicial())
+                );
+
+                cbEstado.setSelectedItem(
+                        c.getEstado()
+                );
+
+                encontrado = true;
+
+                break;
             }
         }
 
-        CuentaBancaria nueva =
-                new CuentaBancaria(
-                        idEmpresa,
-                        ban,
-                        num,
-                        tipo,
-                        saldo,
-                        est
-                );
-
-        listaCuentas.add(nueva);
-
-        CuentaBancariaDAO dao =
-                new CuentaBancariaDAO();
-
-        boolean guardado =
-                dao.guardar(nueva);
-
-        if (guardado) {
+        if (!encontrado) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Cuenta guardada en MySQL."
+                    "Cuenta no encontrada.",
+                    "Búsqueda",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        DialogEditar ventanaEdit
+                = new DialogEditar(
+                        this,
+                        true,
+                        idEmpresa
+                );
+
+        ventanaEdit.setLocationRelativeTo(this);
+
+        ventanaEdit.setVisible(true);
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        String numeroBuscar
+                = txtNumeroCuenta.getText().trim();
+
+        if (numeroBuscar.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese un número de cuenta.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        boolean eliminado = listaCuentas.removeIf(
+                c -> c.getIdEmpresa() == idEmpresa
+                && c.getNumeroCuenta()
+                        .equalsIgnoreCase(numeroBuscar)
+        );
+
+        if (eliminado) {
+
+            limpiarCampos();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Registro eliminado correctamente."
             );
 
         } else {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Error guardando en MySQL.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
+                    "No se encontró el registro.",
+                    "Búsqueda",
+                    JOptionPane.WARNING_MESSAGE
             );
         }
-
-        limpiarCampos();
-
-    } catch (NumberFormatException e) {
-
-        JOptionPane.showMessageDialog(
-                this,
-                "El saldo debe ser numérico.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-        );
-
-    } catch (Exception e) {
-
-        JOptionPane.showMessageDialog(
-                this,
-                "Error inesperado: "
-                + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-        );
-    }
-
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-                                        
-    DialogBuscar buscador =
-        new DialogBuscar(this, true);
-
-buscador.setLocationRelativeTo(this);
-
-buscador.setVisible(true);
-
-String numeroABuscar =
-        buscador.getNumeroEncontrado().trim();
-
-if (numeroABuscar.isEmpty()) {
-
-    return;
-}
-
-boolean encontrado = false;
-
-for (CuentaBancaria c : listaCuentas) {
-
-    if (c.getIdEmpresa() != idEmpresa) {
-        continue;
-    }
-
-    if (c.getNumeroCuenta()
-            .equalsIgnoreCase(numeroABuscar)) {
-
-        txtIdEmpresa.setText(
-                String.valueOf(c.getIdEmpresa())
-        );
-
-        txtBanco.setText(
-                c.getBanco()
-        );
-
-        txtNumeroCuenta.setText(
-                c.getNumeroCuenta()
-        );
-
-        cbTipoCuenta.setSelectedItem(
-                c.getTipoCuenta()
-        );
-
-        txtSaldoInicial.setText(
-                String.valueOf(c.getSaldoInicial())
-        );
-
-        cbEstado.setSelectedItem(
-                c.getEstado()
-        );
-
-        encontrado = true;
-
-        break;
-    }
-}
-
-if (!encontrado) {
-
-    JOptionPane.showMessageDialog(
-            this,
-            "Cuenta no encontrada.",
-            "Búsqueda",
-            JOptionPane.WARNING_MESSAGE
-    );
-}
-    }//GEN-LAST:event_btnBuscarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-       DialogEditar ventanaEdit =
-            new DialogEditar(
-                    this,
-                    true,
-                    idEmpresa
-            );
-
-    ventanaEdit.setLocationRelativeTo(this);
-
-    ventanaEdit.setVisible(true);
-    }//GEN-LAST:event_btnEditarActionPerformed
-
-    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-String numeroBuscar =
-        txtNumeroCuenta.getText().trim();
-
-if (numeroBuscar.isEmpty()) {
-
-    JOptionPane.showMessageDialog(
-            this,
-            "Ingrese un número de cuenta.",
-            "Validación",
-            JOptionPane.WARNING_MESSAGE
-    );
-
-    return;
-}
-
-boolean eliminado = listaCuentas.removeIf(
-        c -> c.getIdEmpresa() == idEmpresa
-                && c.getNumeroCuenta()
-                        .equalsIgnoreCase(numeroBuscar)
-);
-
-if (eliminado) {
-
-    limpiarCampos();
-
-    JOptionPane.showMessageDialog(
-            this,
-            "Registro eliminado correctamente."
-    );
-
-} else {
-
-    JOptionPane.showMessageDialog(
-            this,
-            "No se encontró el registro.",
-            "Búsqueda",
-            JOptionPane.WARNING_MESSAGE
-    );
-}
 
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void txtBancoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBancoKeyReleased
- String texto =
-        txtBanco.getText()
-                .toUpperCase()
-                .trim();
+        String texto
+                = txtBanco.getText()
+                        .toUpperCase()
+                        .trim();
 
-txtBanco.setText(texto);
+        txtBanco.setText(texto);
     }//GEN-LAST:event_txtBancoKeyReleased
 
     /**
@@ -504,18 +506,18 @@ txtBanco.setText(texto);
     // End of variables declaration//GEN-END:variables
 private void limpiarCampos() {
 
-    txtIdEmpresa.setText("");
+        txtIdEmpresa.setText("");
 
-    txtBanco.setText("");
+        txtBanco.setText("");
 
-    txtNumeroCuenta.setText("");
+        txtNumeroCuenta.setText("");
 
-    txtSaldoInicial.setText("");
+        txtSaldoInicial.setText("");
 
-    cbTipoCuenta.setSelectedIndex(0);
+        cbTipoCuenta.setSelectedIndex(0);
 
-    cbEstado.setSelectedIndex(0);
+        cbEstado.setSelectedIndex(0);
 
-    txtBanco.requestFocus();
-}
+        txtBanco.requestFocus();
+    }
 }
