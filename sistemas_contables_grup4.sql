@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-05-2026 a las 21:19:05
+-- Tiempo de generación: 26-05-2026 a las 21:58:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -208,14 +208,15 @@ INSERT INTO `usuarios` (`id_usuario`, `id_empresa`, `nombre`, `usuario`, `clave`
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `vista_disponibilidad_diaria` (
-`id_cuenta` int(11)
+`id_empresa` int(11)
+,`id_cuenta` int(11)
 ,`banco` varchar(100)
 ,`numero_cuenta` varchar(50)
 ,`fecha` date
 ,`saldo_inicial` decimal(10,2)
 ,`ingresos` decimal(37,2)
 ,`egresos` decimal(37,2)
-,`saldo_disponible` decimal(39,2)
+,`saldo_disponible` decimal(15,2)
 );
 
 -- --------------------------------------------------------
@@ -225,7 +226,7 @@ CREATE TABLE `vista_disponibilidad_diaria` (
 --
 DROP TABLE IF EXISTS `vista_disponibilidad_diaria`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_disponibilidad_diaria`  AS SELECT `c`.`id_cuenta` AS `id_cuenta`, `c`.`banco` AS `banco`, `c`.`numero_cuenta` AS `numero_cuenta`, cast(`m`.`fecha` as date) AS `fecha`, `c`.`saldo_inicial` AS `saldo_inicial`, coalesce(sum(case when `m`.`tipo` = 'INGRESO' then `m`.`monto` else 0 end),0) AS `ingresos`, coalesce(sum(case when `m`.`tipo` = 'EGRESO' then `m`.`monto` else 0 end),0) AS `egresos`, `c`.`saldo_inicial`+ coalesce(sum(case when `m`.`tipo` = 'INGRESO' then `m`.`monto` else 0 end),0) - coalesce(sum(case when `m`.`tipo` = 'EGRESO' then `m`.`monto` else 0 end),0) AS `saldo_disponible` FROM (`cuentas_bancarias` `c` left join `movimientos_bancarios` `m` on(`c`.`id_cuenta` = `m`.`id_cuenta`)) GROUP BY `c`.`id_cuenta`, `c`.`banco`, `c`.`numero_cuenta`, cast(`m`.`fecha` as date), `c`.`saldo_inicial` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_disponibilidad_diaria`  AS SELECT `c`.`id_empresa` AS `id_empresa`, `c`.`id_cuenta` AS `id_cuenta`, `c`.`banco` AS `banco`, `c`.`numero_cuenta` AS `numero_cuenta`, cast(`m`.`fecha` as date) AS `fecha`, `c`.`saldo_inicial` AS `saldo_inicial`, coalesce(sum(case when `m`.`tipo` = 'INGRESO' then `m`.`monto` else 0 end),0) AS `ingresos`, coalesce(sum(case when `m`.`tipo` = 'EGRESO' then `m`.`monto` else 0 end),0) AS `egresos`, `c`.`saldo_actual` AS `saldo_disponible` FROM (`cuentas_bancarias` `c` left join `movimientos_bancarios` `m` on(`c`.`id_cuenta` = `m`.`id_cuenta` and `c`.`id_empresa` = `m`.`id_empresa`)) GROUP BY `c`.`id_empresa`, `c`.`id_cuenta`, `c`.`banco`, `c`.`numero_cuenta`, cast(`m`.`fecha` as date), `c`.`saldo_inicial`, `c`.`saldo_actual` ;
 
 --
 -- Índices para tablas volcadas
