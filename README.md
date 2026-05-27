@@ -1,5 +1,3 @@
-<br/>
-
-![gifgithub](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmhzNjN6cWgzczV0ODZ2ZGF4enNuc3RmN2JicDh4N3d2ZnlrOGR0aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zOvBKUUEERdNm/giphy.gif)
-
-<br/>
+<p align="center">
+  <img src="./Img/Sistemas_contables.jpeg" alt="Sistema Contable UES" width="100%">
+</p>
