@@ -6,7 +6,7 @@
 > * **Catedrático:** Ing. Herrera
 > * **Institución:** Universidad de El Salvador Facultad Multidiciplinaria de Occidente (UES)
 >
-> _Este componente ha sido desarrollado como parte del sistema contable integral, enfocado en la gestión, control y conciliación de cuentas bancarias y flujos de efectivo._
+> _Este applicación ha sido desarrollado como parte del sistema contable integral, enfocado en la gestión, control y conciliación de cuentas bancarias y flujos de efectivo._
 
 ---
 
