@@ -6,10 +6,12 @@ import java.sql.DriverManager;
 public class Conexion {
 
     private static final String URL =
-        "jdbc:mysql://localhost:3306/sistemas_contables_grup4";
+        "jdbc:mysql://acela.proxy.rlwy.net:34564/railway?allowPublicKeyRetrieval=true&useSSL=false";
 
     private static final String USUARIO = "root";
-    private static final String CLAVE = "";
+
+    private static final String CLAVE =
+        "hqlYdWxTocchiShASKFsKcqprGNKFlrH";
 
     public static Connection getConexion() {
 

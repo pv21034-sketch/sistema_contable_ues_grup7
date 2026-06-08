@@ -8,20 +8,28 @@
 -- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
+-- START TRANSACTION; -- quitado para Railway/DBeaver
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Base de datos: `sistemas_contables_grup4`
 --
 
 -- --------------------------------------------------------
+
+
+-- Limpieza para Railway: permite ejecutar el script aunque haya tablas creadas a medias
+SET FOREIGN_KEY_CHECKS = 0;
+DROP VIEW IF EXISTS `vista_disponibilidad_diaria`;
+DROP TABLE IF EXISTS `detalle_conciliacion`;
+DROP TABLE IF EXISTS `cheques`;
+DROP TABLE IF EXISTS `conciliaciones`;
+DROP TABLE IF EXISTS `movimientos_bancarios`;
+DROP TABLE IF EXISTS `transferencias`;
+DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `cuentas_bancarias`;
+DROP TABLE IF EXISTS `empresa`;
+SET FOREIGN_KEY_CHECKS = 1;
 
 --
 -- Estructura de tabla para la tabla `cheques`
@@ -226,7 +234,7 @@ CREATE TABLE `vista_disponibilidad_diaria` (
 --
 DROP TABLE IF EXISTS `vista_disponibilidad_diaria`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_disponibilidad_diaria`  AS SELECT `c`.`id_empresa` AS `id_empresa`, `c`.`id_cuenta` AS `id_cuenta`, `c`.`banco` AS `banco`, `c`.`numero_cuenta` AS `numero_cuenta`, cast(`m`.`fecha` as date) AS `fecha`, `c`.`saldo_inicial` AS `saldo_inicial`, coalesce(sum(case when `m`.`tipo` = 'INGRESO' then `m`.`monto` else 0 end),0) AS `ingresos`, coalesce(sum(case when `m`.`tipo` = 'EGRESO' then `m`.`monto` else 0 end),0) AS `egresos`, `c`.`saldo_actual` AS `saldo_disponible` FROM (`cuentas_bancarias` `c` left join `movimientos_bancarios` `m` on(`c`.`id_cuenta` = `m`.`id_cuenta` and `c`.`id_empresa` = `m`.`id_empresa`)) GROUP BY `c`.`id_empresa`, `c`.`id_cuenta`, `c`.`banco`, `c`.`numero_cuenta`, cast(`m`.`fecha` as date), `c`.`saldo_inicial`, `c`.`saldo_actual` ;
+CREATE VIEW `vista_disponibilidad_diaria` AS SELECT `c`.`id_empresa` AS `id_empresa`, `c`.`id_cuenta` AS `id_cuenta`, `c`.`banco` AS `banco`, `c`.`numero_cuenta` AS `numero_cuenta`, cast(`m`.`fecha` as date) AS `fecha`, `c`.`saldo_inicial` AS `saldo_inicial`, coalesce(sum(case when `m`.`tipo` = 'INGRESO' then `m`.`monto` else 0 end),0) AS `ingresos`, coalesce(sum(case when `m`.`tipo` = 'EGRESO' then `m`.`monto` else 0 end),0) AS `egresos`, `c`.`saldo_actual` AS `saldo_disponible` FROM (`cuentas_bancarias` `c` left join `movimientos_bancarios` `m` on(`c`.`id_cuenta` = `m`.`id_cuenta` and `c`.`id_empresa` = `m`.`id_empresa`)) GROUP BY `c`.`id_empresa`, `c`.`id_cuenta`, `c`.`banco`, `c`.`numero_cuenta`, cast(`m`.`fecha` as date), `c`.`saldo_inicial`, `c`.`saldo_actual` ;
 
 --
 -- Índices para tablas volcadas
@@ -359,8 +367,4 @@ ALTER TABLE `detalle_conciliacion`
 --
 ALTER TABLE `usuarios`
   ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- COMMIT; -- quitado para Railway/DBeaver
